@@ -70,7 +70,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
-            cd /home/ubuntu/next-app
+            cd /home/ubuntu/next-app/deploy
             npm install --production
 
       # 4️⃣ Start/Reload app with PM2
@@ -81,7 +81,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
-            cd /home/ubuntu/next-app
+            cd /home/ubuntu/next-app/deploy
             pm2 reload next-app || pm2 start npm --name "next-app" -- start
             echo "Next.js app deployed successfully!"
 
