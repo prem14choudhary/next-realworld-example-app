@@ -56,9 +56,9 @@ jobs:
       - name: Copy app to server
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.IP }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
           source: "./deploy/*"
           target: "/home/ubuntu/next-app/"
 
