@@ -10,73 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # 3️⃣ Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # 4️⃣ Build Next.js app
-      - name: Build app
+      - name: Build Next.js
         run: npm run build
 
-      # 5️⃣ Upload `.next` folder and package files as artifact
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: nextjs-build
-          path: "*"
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-
-    steps:
-      # 1️⃣ Download artifact
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: ./deploy
-
-      # 2️⃣ Copy files to server
       - name: Copy app to server
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.IP }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
-          source: "./deploy/*"
+          source: "."
           target: "/home/ubuntu/next-app/"
 
-      # 3️⃣ Install dependencies on server
-      - name: Install dependencies on server
-        uses: appleboy/ssh-action@v0.1.9
-        with:
-          host: ${{ secrets.IP }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.KEY }}
-          script: |
-            cd /home/ubuntu/next-app/deploy
-            npm install --production
-
-      # 4️⃣ Start/Reload app with PM2
       - name: Start app with PM2
-        uses: appleboy/ssh-action@v0.1.9
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.IP }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
-            cd /home/ubuntu/next-app/deploy
-            pm2 reload next-app || pm2 start npm --name "next-app" -- start
-            echo "Next.js app deployed successfully!"
+            cd /home/ubuntu/next-app
+            pm2 reload next-app || pm2 start npm --name next-app -- start
 
